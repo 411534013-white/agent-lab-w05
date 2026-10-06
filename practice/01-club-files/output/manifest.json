@@ -1,0 +1,62 @@
+[
+  {
+    "source": "announcement.txt",
+    "destination": "publicity/announcement.txt",
+    "reason": "活動通知，提醒參加者攜帶筆記本。"
+  },
+  {
+    "source": "announcement_copy.txt",
+    "destination": "publicity/announcement_copy.txt",
+    "reason": "活動通知之副本檔案，內容與 announcement.txt 完全一致，保留備份。"
+  },
+  {
+    "source": "budget_draft.txt",
+    "destination": "logistics_budget/budget_draft.txt",
+    "reason": "活動紙張預算草案（尚未核定），歸類於器材與預算。"
+  },
+  {
+    "source": "equipment_backup.txt",
+    "destination": "logistics_budget/equipment_backup.txt",
+    "reason": "器材清單之備份檔，內容與 equipment_list.txt 完全一致，保留副本。"
+  },
+  {
+    "source": "equipment_list.txt",
+    "destination": "logistics_budget/equipment_list.txt",
+    "reason": "活動所需器材項目與數量清單（麥克筆與紙張）。"
+  },
+  {
+    "source": "feedback_questions.txt",
+    "destination": "feedback/feedback_questions.txt",
+    "reason": "活動後回饋問卷題目，歸類於回饋分類。"
+  },
+  {
+    "source": "meeting_notes.txt",
+    "destination": "proposals_planning/meeting_notes.txt",
+    "reason": "籌備會議紀錄，記錄下次需討論室內或室外方案。"
+  },
+  {
+    "source": "next_steps.txt",
+    "destination": "proposals_planning/next_steps.txt",
+    "reason": "待辦事項提醒，記錄需比較兩版企劃案且兩者皆未定案。"
+  },
+  {
+    "source": "poster_text.txt",
+    "destination": "publicity/poster_text.txt",
+    "reason": "宣傳海報文案標語，歸類於宣傳與文宣。"
+  },
+  {
+    "source": "proposal_final.txt",
+    "destination": "proposals_planning/proposal_final.txt",
+    "reason": "企劃案第一版（戶外方案30分鐘），雖檔名含 final 但內文標註尚未定案，完整保留。"
+  },
+  {
+    "source": "proposal_final2.txt",
+    "destination": "proposals_planning/proposal_final2.txt",
+    "reason": "企劃案第二版（室內方案20分鐘），與第一版內容不同，完整保留供討論與比對。"
+  },
+  {
+    "source": "rain_plan.txt",
+    "destination": "proposals_planning/rain_plan.txt",
+    "reason": "雨天備案規劃，記錄下雨時另議室內方案。"
+  }
+]
