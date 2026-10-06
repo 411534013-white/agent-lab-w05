@@ -15,7 +15,6 @@
       --border: #e2e8f0;
       --error-bg: #fef2f2;
       --error-text: #b91c1c;
-      --success-bg: #f0fdf4;
       --radius: 12px;
       --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     }
@@ -122,9 +121,10 @@
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: background 0.2s, transform 0.1s;
     }
     button.primary:hover { background: var(--primary-hover); }
+    button.primary:active { transform: scale(0.98); }
     button.secondary {
       flex: 1;
       min-width: 110px;
@@ -141,13 +141,18 @@
     button.secondary:hover { background: #e2e8f0; }
     .result-section {
       margin-top: 20px;
-      min-height: 110px;
+      min-height: 120px;
     }
     .result-box {
       border: 2px solid #bfdbfe;
       background: #eff6ff;
       border-radius: 10px;
-      padding: 16px 20px;
+      padding: 18px 20px;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     .result-header {
       display: flex;
@@ -163,8 +168,12 @@
       font-weight: 700;
       font-size: 0.85rem;
     }
+    .match-count {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
     .result-name {
-      font-size: 1.15rem;
+      font-size: 1.2rem;
       font-weight: 700;
       color: #1e3a8a;
       margin-bottom: 8px;
@@ -185,6 +194,7 @@
       text-align: center;
       font-weight: 600;
       font-size: 0.95rem;
+      animation: fadeIn 0.3s ease-in-out;
     }
     .history-card {
       background: var(--card-bg);
@@ -228,12 +238,19 @@
       justify-content: space-between;
       align-items: center;
       font-size: 0.9rem;
+      animation: fadeIn 0.2s ease-in-out;
     }
     .history-empty {
       color: var(--text-muted);
       font-size: 0.85rem;
       text-align: center;
       padding: 12px 0;
+    }
+    .shortcut-tip {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -283,6 +300,10 @@
         <button class="secondary" id="btn-reset" onclick="resetFilters()">重設篩選</button>
       </div>
 
+      <div class="shortcut-tip" id="shortcut-hint">
+        💡 提示：可直接按鍵盤 Enter 或 Space 進行抽取
+      </div>
+
       <div class="result-section" id="result-area">
         <div style="text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 24px 0;" id="placeholder-text">
           設定上方條件後，點擊「幫我選」開始抽取！
@@ -320,6 +341,7 @@
     let currentLang = 'zh';
     let historyRecords = [];
     let currentResult = null;
+    let lastSelectedId = null; // For avoiding consecutive duplicate picks when multiple candidates exist
 
     const i18n = {
       zh: {
@@ -347,6 +369,8 @@
         minutesUnit: "分鐘",
         locLabel: "地點",
         energyLabel: "強度",
+        matchPool: "符合候選數：",
+        shortcutHint: "💡 提示：可直接按鍵盤 Enter 或 Space 進行抽取",
         locText: { indoor: "室內", outdoor: "室外" },
         energyText: { low: "低強度", medium: "中強度" }
       },
@@ -375,6 +399,8 @@
         minutesUnit: "mins",
         locLabel: "Location",
         energyLabel: "Energy",
+        matchPool: "Matching candidates: ",
+        shortcutHint: "💡 Tip: Press Enter or Space on keyboard to pick",
         locText: { indoor: "Indoor", outdoor: "Outdoor" },
         energyText: { low: "Low", medium: "Medium" }
       }
@@ -399,6 +425,7 @@
       document.getElementById('ui-history-title').textContent = t.historyTitle;
       document.getElementById('btn-clear-history').textContent = t.clearHistory;
       document.getElementById('lang-toggle').textContent = currentLang === 'zh' ? 'EN' : '中文';
+      document.getElementById('shortcut-hint').textContent = t.shortcutHint;
 
       const locSel = document.getElementById('filter-location');
       locSel.options[0].text = t.locAll;
@@ -432,11 +459,22 @@
       });
 
       if (matches.length === 0) {
-        currentResult = { notFound: true };
+        currentResult = { notFound: true, poolSize: 0 };
       } else {
-        const randomIndex = Math.floor(Math.random() * matches.length);
-        const selected = matches[randomIndex];
-        currentResult = { notFound: false, activity: selected };
+        // Revision v2: avoid consecutive duplicate pick if matches > 1
+        let candidatePool = matches;
+        if (matches.length > 1 && lastSelectedId) {
+          const filtered = matches.filter(m => m.id !== lastSelectedId);
+          if (filtered.length > 0) {
+            candidatePool = filtered;
+          }
+        }
+
+        const randomIndex = Math.floor(Math.random() * candidatePool.length);
+        const selected = candidatePool[randomIndex];
+        lastSelectedId = selected.id;
+
+        currentResult = { notFound: false, activity: selected, poolSize: matches.length };
         
         // Add to history (newest first, max 5)
         historyRecords.unshift(selected);
@@ -471,6 +509,7 @@
         <div class="result-box">
           <div class="result-header">
             <span class="badge-id">${act.id}</span>
+            <span class="match-count">${t.matchPool}${currentResult.poolSize}</span>
           </div>
           <div class="result-name">${name}</div>
           <div class="result-meta">
@@ -515,6 +554,15 @@
         `;
       }).join('');
     }
+
+    // Keyboard shortcut (Enter or Space)
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'SELECT' || e.target.tagName === 'BUTTON') return;
+      if (e.code === 'Space' || e.key === 'Enter') {
+        e.preventDefault();
+        pickActivity();
+      }
+    });
   </script>
 </body>
 </html>
