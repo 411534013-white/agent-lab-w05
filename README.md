@@ -26,6 +26,9 @@ Then tell me the full path of practice/01-club-files.
 No git on this computer? Use the web route in section 4.
 這台電腦沒有 git：改走第 4 節的網頁路線。
 
+The local helper `推送到GitHub.bat` uses a normal push and stops if this folder is not a Git repository or has no `origin`. Do not use `--force` for this class repo; it can overwrite the commit history you are expected to preserve.
+本機輔助檔 `推送到GitHub.bat` 只使用一般推送；若資料夾不是 Git repository 或沒有 `origin` 就會停止。這份課程 repo 不要使用 `--force`，它可能覆蓋作業要求保留的提交紀錄。
+
 ## 3 Commit and push after every task（每做完一題就 commit＋push）
 
 Do tasks A, B and D on the website in this same Codex project. Use the full paths inside your repo; card B has no path, so start it with one line: `Work in [full path of practice/02-campus-picker].` After each task, paste:
